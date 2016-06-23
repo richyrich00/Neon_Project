@@ -50,6 +50,7 @@ cat<-function(x){
 cat(SOAP.cat)
 
 hist(SOAP.cont)
+hist
 
 ```
 
