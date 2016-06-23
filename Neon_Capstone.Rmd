@@ -1,0 +1,100 @@
+---
+title: "NEON_Capstone_Project"
+author: "Cassondra Walker"
+date: "June 23, 2016"
+output: html_document
+---
+
+# **Project Title**
+
+### Jon Weiner - Cassondra Walker -  
+
+####**Investigation Question**
+
+####**Hypothesis**
+
+####**Data Flow**
+
+```{r}
+# Insert workflow image
+```
+
+
+#### Load Libraries and set up R working environment
+
+```{r load_libraries}
+
+library(raster)
+library(rhdf5)
+library(rgdal)
+library(neonAOP)
+
+# For GWR
+#library(gwrr)
+#library(spgwr)
+#library(maptools)
+#library(ggplot2)
+
+options(stringsAsFactors = FALSE)
+
+getwd()
+
+```
+
+#### Load SJER, TEAK, SOAP Canopy Height Models
+
+```{r load-chm}
+
+SJER_chm <- raster("../NEONdata/D17-California/SJER/2013/lidar/SJER_lidarCHM.tif")
+plot(SJER_chm)
+
+TEAK_chm <- raster("../NEONdata/D17-California/TEAK/2013/lidar/TEAK_lidarCHM.tif")
+plot(TEAK_chm)
+
+SOAP_chm <- raster("../NEONdata/D17-California/SOAP/2013/lidar/SOAP_lidarCHM.tif")
+plot(SOAP_chm)
+
+```
+
+## Code
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+## Data Outputs
+
+You can also embed plots, for example:
+
+```{r }
+
+```
+
+```{r}
+
+```
+
+## Statistical Analysis
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+## Conclusions
+
+```{r}
+
+```
+
+```{r}
+
+```
+
