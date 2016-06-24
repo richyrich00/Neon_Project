@@ -6,7 +6,7 @@ output: html_document
 ---
 
 
-```{r declare-your-libraries}
+```{r declare-your-libraries, echo=FALSE}
 library(dplyr)
 library(raster)
 library(rhdf5)
@@ -139,39 +139,43 @@ SOAP.aggregate
    group_by(plotid) %>%
    summarise(dbhheight.min = min(dbhheight, na.rm=TRUE), dbhheight.max = max(dbhheight, na.rm=TRUE), dbhheight.mean=mean(dbhheight, na.rm=TRUE), dbhheight.median=median(dbhheight, na.rm=TRUE),dbhheight.sd=sd(dbhheight, na.rm=TRUE))
  
+ insitu_dbhheight
+ 
  # basalcanopydiam
  insitu_basalcanopydiam <- SOAP.cont %>%
    group_by(plotid) %>%
    summarise(basalcanopydiam.min = min(basalcanopydiam, na.rm=TRUE), basalcanopydiam.max = max(basalcanopydiam, na.rm=TRUE), basalcanopydiam.mean=mean(basalcanopydiam, na.rm=TRUE), basalcanopydiam.median=median(basalcanopydiam, na.rm=TRUE),basalcanopydiam.sd=sd(basalcanopydiam, na.rm=TRUE))
  
+ insitu_basalcanopydiam
  
  # maxcanopydiam
  insitu_maxcanopydiam <- SOAP.cont %>%
    group_by(plotid) %>%
    summarise(maxcanopydiam.min = min(maxcanopydiam, na.rm=TRUE), maxcanopydiam.max = max(maxcanopydiam, na.rm=TRUE), maxcanopydiam.mean=mean(maxcanopydiam, na.rm=TRUE), maxcanopydiam.median=median(maxcanopydiam, na.rm=TRUE),maxcanopydiam.sd=sd(maxcanopydiam, na.rm=TRUE))
  
+ insitu_maxcanopydiam
+ 
   # stemheight
  insitu_stemheight <- SOAP.cont %>%
    group_by(plotid) %>%
    summarise(stemheight.min = min(stemheight, na.rm=TRUE), stemheight.max = max(stemheight, na.rm=TRUE), stemheight.mean=mean(stemheight, na.rm=TRUE), stemheight.median=median(stemheight, na.rm=TRUE),stemheight.sd=sd(stemheight, na.rm=TRUE))
+ 
+ insitu_stemheight
  
   # livingcanopy
  insitu_livingcanopy <- SOAP.cont %>%
    group_by(plotid) %>%
    summarise(livingcanopy.min = min(livingcanopy, na.rm=TRUE), livingcanopy.max = max(livingcanopy, na.rm=TRUE), livingcanopy.mean=mean(livingcanopy, na.rm=TRUE), livingcanopy.median=median(livingcanopy, na.rm=TRUE),livingcanopy.sd=sd(livingcanopy, na.rm=TRUE))
   
+ insitu_livingcanopy
  
    # inplotcanopy
  insitu_inplotcanopy <- SOAP.cont %>%
    group_by(plotid) %>%
    summarise(inplotcanopy.min = min(inplotcanopy, na.rm=TRUE), inplotcanopy.max = max(inplotcanopy, na.rm=TRUE), inplotcanopy.mean=mean(inplotcanopy, na.rm=TRUE), inplotcanopy.median=median(inplotcanopy, na.rm=TRUE),inplotcanopy.sd=sd(inplotcanopy, na.rm=TRUE))
-  
-    # inplotcanopy
  
- insitu_inplotcanopy <- SOAP.cont %>%
-   group_by(plotid) %>%
-   summarise(inplotcanopy.min = min(inplotcanopy, na.rm=TRUE), inplotcanopy.max = max(inplotcanopy, na.rm=TRUE), inplotcanopy.mean=mean(inplotcanopy, na.rm=TRUE), inplotcanopy.median=median(inplotcanopy, na.rm=TRUE),inplotcanopy.sd=sd(inplotcanopy, na.rm=TRUE))
-  
+ insitu_inplotcanopy 
  
 ```
+
 
