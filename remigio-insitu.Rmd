@@ -124,11 +124,15 @@ SOAP.aggregate
 ## WHOA-- That's a big spicy meatball!
 ## Break it down by plot again-- this time stratify by parameter
 
+#overside columnn width restriction
+options(dplyr.width = Inf)
+
 # dbh
  insitu_dbh <- SOAP.cont %>%
    group_by(plotid) %>%
    summarise(dbh.min = min(dbh, na.rm=TRUE), dbh.max = max(dbh, na.rm=TRUE), dbh.mean=mean(dbh, na.rm=TRUE), dbh.median=median(dbh, na.rm=TRUE),dbh.sd=sd(dbh, na.rm=TRUE))
-             
+
+ insitu_dbh             
 
 ## functionalization might be best here...but for now 
  ## JV scripting

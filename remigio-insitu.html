@@ -529,13 +529,38 @@ SOAP.aggregate</code></pre>
 <pre class="r"><code>## WHOA-- That's a big spicy meatball!
 ## Break it down by plot again-- this time stratify by parameter
 
+#overside columnn width restriction
+options(dplyr.width = Inf)
+
 # dbh
  insitu_dbh &lt;- SOAP.cont %&gt;%
    group_by(plotid) %&gt;%
    summarise(dbh.min = min(dbh, na.rm=TRUE), dbh.max = max(dbh, na.rm=TRUE), dbh.mean=mean(dbh, na.rm=TRUE), dbh.median=median(dbh, na.rm=TRUE),dbh.sd=sd(dbh, na.rm=TRUE))
-             
 
-## functionalization might be best here...but for now 
+ insitu_dbh             </code></pre>
+<pre><code>## Source: local data frame [18 x 6]
+## 
+##      plotid dbh.min dbh.max  dbh.mean dbh.median    dbh.sd
+##      (fctr)   (dbl)   (dbl)     (dbl)      (dbl)     (dbl)
+## 1  SOAP1343     1.0    15.4  8.400000       8.60  6.437391
+## 2   SOAP139     0.4   159.8  7.274510       1.70 19.207526
+## 3   SOAP143     0.4    44.0  6.018889       1.40 11.503276
+## 4  SOAP1515     1.0    24.0 11.646154      10.50  6.357753
+## 5  SOAP1563     0.0     0.0  0.000000       0.00  0.000000
+## 6  SOAP1611     0.0     0.0  0.000000       0.00  0.000000
+## 7  SOAP1695     0.0    60.7  7.654667       1.90 12.417656
+## 8   SOAP187     1.2   102.9  8.220652       2.75 16.507677
+## 9   SOAP223     0.6   107.9 16.823529      10.20 26.028387
+## 10  SOAP255     0.4    78.3 10.751724       7.30 13.063271
+## 11  SOAP283     0.0    33.5  6.492857       0.00 12.273578
+## 12  SOAP299     1.1    64.1 32.685000      33.90 21.016767
+## 13  SOAP331     0.4    72.1 10.714729       5.90 12.610971
+## 14   SOAP43     0.7    84.0 11.066316       5.80 16.032312
+## 15  SOAP555     0.0     0.0  0.000000       0.00  0.000000
+## 16   SOAP63     0.2    50.8 14.746364      13.25 12.035816
+## 17   SOAP95     0.3    61.3 10.762626       5.50 12.969474
+## 18  SOAP991     1.4    10.5  6.420000       8.20  4.490212</code></pre>
+<pre class="r"><code>## functionalization might be best here...but for now 
  ## JV scripting
 
  
@@ -567,7 +592,26 @@ SOAP.aggregate</code></pre>
 ## 16   SOAP63           0.8           130      111.23607            130.0
 ## 17   SOAP95          10.0           130       85.84906            130.0
 ## 18  SOAP991          10.0           130      121.04478            130.0
-## Variables not shown: dbhheight.sd (dbl)</code></pre>
+##    dbhheight.sd
+##           (dbl)
+## 1      33.87958
+## 2      59.08965
+## 3      59.33022
+## 4      65.13944
+## 5       0.00000
+## 6       0.00000
+## 7      61.59260
+## 8      60.22498
+## 9      55.12896
+## 10     45.67221
+## 11     55.19133
+## 12     23.53394
+## 13     58.62428
+## 14     49.95998
+## 15      0.00000
+## 16     43.87607
+## 17     58.14379
+## 18     31.77260</code></pre>
 <pre class="r"><code> # basalcanopydiam
  insitu_basalcanopydiam &lt;- SOAP.cont %&gt;%
    group_by(plotid) %&gt;%
@@ -596,8 +640,26 @@ SOAP.aggregate</code></pre>
 ## 16   SOAP63                 0.0                  61            2.3360656
 ## 17   SOAP95                 0.0                  30            0.7809524
 ## 18  SOAP991                 0.0                 163           34.6567164
-## Variables not shown: basalcanopydiam.median (dbl), basalcanopydiam.sd
-##   (dbl)</code></pre>
+##    basalcanopydiam.median basalcanopydiam.sd
+##                     (dbl)              (dbl)
+## 1                    22.5          30.840844
+## 2                     0.0          13.882674
+## 3                     0.0           6.012362
+## 4                    20.0          21.502916
+## 5                    24.0          22.874839
+## 6                    18.0          64.730286
+## 7                     0.0          17.087255
+## 8                     0.0           6.104502
+## 9                     6.0          15.085030
+## 10                    0.0          15.270379
+## 11                   13.0          11.948608
+## 12                    0.0          35.305436
+## 13                    0.0           5.253389
+## 14                    0.0           4.755664
+## 15                  110.0          48.803347
+## 16                    0.0           8.759987
+## 17                    0.0           3.855518
+## 18                   24.0          31.471754</code></pre>
 <pre class="r"><code> # maxcanopydiam
  insitu_maxcanopydiam &lt;- SOAP.cont %&gt;%
    group_by(plotid) %&gt;%
@@ -626,7 +688,26 @@ SOAP.aggregate</code></pre>
 ## 16   SOAP63               0.0               6.8           2.604918
 ## 17   SOAP95               0.0              12.4           2.096226
 ## 18  SOAP991               0.4               4.7           1.962687
-## Variables not shown: maxcanopydiam.median (dbl), maxcanopydiam.sd (dbl)</code></pre>
+##    maxcanopydiam.median maxcanopydiam.sd
+##                   (dbl)            (dbl)
+## 1                  2.85        5.7366843
+## 2                  0.90        3.2085684
+## 3                  0.60        1.8008709
+## 4                  2.10        1.0403624
+## 5                  1.80        1.0021954
+## 6                  1.80        1.3150412
+## 7                  2.20        7.1522634
+## 8                  0.80        8.3154186
+## 9                  1.90        2.1445209
+## 10                 2.40        2.3197449
+## 11                 1.70        1.2256642
+## 12                 4.25        2.9714332
+## 13                 1.40        1.6596928
+## 14                 1.95        2.4516743
+## 15                 1.95        0.9423375
+## 16                 2.45        1.6878688
+## 17                 0.90        2.2582304
+## 18                 2.00        0.9766727</code></pre>
 <pre class="r"><code>  # stemheight
  insitu_stemheight &lt;- SOAP.cont %&gt;%
    group_by(plotid) %&gt;%
@@ -655,7 +736,26 @@ SOAP.aggregate</code></pre>
 ## 16   SOAP63            0.6           33.0       9.2327869
 ## 17   SOAP95            0.5           28.1       6.0509434
 ## 18  SOAP991           -1.6            3.8       1.8537313
-## Variables not shown: stemheight.median (dbl), stemheight.sd (dbl)</code></pre>
+##    stemheight.median stemheight.sd
+##                (dbl)         (dbl)
+## 1               2.05     1.2123683
+## 2               1.50    13.0803565
+## 3               1.00     4.1863057
+## 4               1.70     0.5867249
+## 5               1.20     0.5426836
+## 6               1.30     1.2318008
+## 7               2.20     2.8116770
+## 8               1.40    14.9537862
+## 9               1.60     1.9816182
+## 10              2.35     6.7463328
+## 11              1.80     4.1795157
+## 12             10.30    12.8098550
+## 13              2.40     6.4031226
+## 14              2.95     7.8090010
+## 15              0.90     0.2250926
+## 16              5.00     9.0170403
+## 17              1.70     8.2020583
+## 18              1.90     0.9241422</code></pre>
 <pre class="r"><code>  # livingcanopy
  insitu_livingcanopy &lt;- SOAP.cont %&gt;%
    group_by(plotid) %&gt;%
@@ -684,7 +784,26 @@ SOAP.aggregate</code></pre>
 ## 16   SOAP63                0              100          62.58197
 ## 17   SOAP95                0              100          84.90566
 ## 18  SOAP991                0              100          71.41791
-## Variables not shown: livingcanopy.median (dbl), livingcanopy.sd (dbl)</code></pre>
+##    livingcanopy.median livingcanopy.sd
+##                  (dbl)           (dbl)
+## 1                   80        33.21709
+## 2                  100        39.42405
+## 3                  100        18.47703
+## 4                   90        20.29418
+## 5                   NA             NaN
+## 6                   NA             NaN
+## 7                  100        19.37172
+## 8                    0        42.40793
+## 9                   90        24.98225
+## 10                 100        46.67953
+## 11                  NA             NaN
+## 12                 100        36.79465
+## 13                 100        41.03676
+## 14                 100        38.57814
+## 15                  NA             NaN
+## 16                 100        48.22568
+## 17                 100        35.96944
+## 18                  80        26.73957</code></pre>
 <pre class="r"><code>   # inplotcanopy
  insitu_inplotcanopy &lt;- SOAP.cont %&gt;%
    group_by(plotid) %&gt;%
@@ -713,7 +832,26 @@ SOAP.aggregate</code></pre>
 ## 16   SOAP63              100              100         100.00000
 ## 17   SOAP95              100              100         100.00000
 ## 18  SOAP991              100              100         100.00000
-## Variables not shown: inplotcanopy.median (dbl), inplotcanopy.sd (dbl)</code></pre>
+##    inplotcanopy.median inplotcanopy.sd
+##                  (dbl)           (dbl)
+## 1                  100       0.0000000
+## 2                  100       0.9053575
+## 3                  100       0.0000000
+## 4                  100       0.0000000
+## 5                   NA             NaN
+## 6                   NA             NaN
+## 7                  100       6.7867965
+## 8                  100       0.0000000
+## 9                  100       0.0000000
+## 10                 100       0.0000000
+## 11                  NA             NaN
+## 12                 100       0.0000000
+## 13                 100       0.0000000
+## 14                 100       7.7713538
+## 15                  NA             NaN
+## 16                 100       0.0000000
+## 17                 100       0.0000000
+## 18                 100       0.0000000</code></pre>
 </div>
 
 
