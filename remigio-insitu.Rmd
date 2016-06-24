@@ -29,6 +29,14 @@ str(insitu.SOAP)
 #summarize
 summary(insitu.SOAP)
 
+
+```
+
+
+## Exploratory Analysis: Subset variables of interest and identify data type (Cat & Cont)
+
+```{r select-variables}
+
 #  selected potential predictors of interest at SOAP 2013
 
 # plotid, taxonid, scientificname, dbh, dbhheight, basalCanopyDiam, Maximum canopy diameter, stemheight
@@ -37,26 +45,30 @@ summary(insitu.SOAP)
 # subset dataframe-- make it not dirty
 insitu.SOAP<-subset(insitu.SOAP, select=c(plotid, easting, northing, taxonid, scientificname, dbh, dbhheight, basalcanopydiam, maxcanopydiam, stemheight, canopyform, livingcanopy,  inplotcanopy))
 
-## subset dataframe for cat vars
+## subset categorical variables
 SOAP.cat<-subset(insitu.SOAP, select=c(plotid, taxonid, scientificname, canopyform))
 
-## subset categorical variables
+## subset continuous variables
 SOAP.cont<- subset(insitu.SOAP, select=c(dbh, dbhheight, basalcanopydiam, maxcanopydiam, stemheight, livingcanopy, inplotcanopy))
-
-## Categorical summaries
-cat<-function(x){
-  summary(x)
-  }
-cat(SOAP.cat)
-
-hist(SOAP.cont)
-hist
 
 ```
 
 
+## Exploratory Analysis- Frequency Categorical Statistics
+```{r summary-statistics-cateogrical}
 
-```{r}
+## Categorical summaries
+freq.plotid<-summary(SOAP.cat$plotid)
+freq.scientificname<-summary(SOAP.cat$scientificname)
+freq.canopyform<- summary(SOAP.cat$canopyform)
+
+```
+
+## Exploratory Analysis- Summary Continuous Statistics 
+```{r summary-statistics-continuous}
+## Continuous variable summaries
+summary(SOAP.cont)
+boxplot(SOAP.cont, las=2)
 
 ```
 
