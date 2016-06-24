@@ -13,7 +13,9 @@ library(rhdf5)
 library(rgdal)
 library(neonAOP)
 library(reshape2)
+library(ggplot2)
 
+options(stringsAsFactors = FALSE)
 
 ```
 
@@ -182,4 +184,125 @@ options(dplyr.width = Inf)
  
 ```
 
+## Let's Extract Some Vegetation Indices for SOAP
+
+```{r extract-L3-NDVI-SOAP-site}
+## import NDVI
+SOAP.ndvi <- raster("../NEONdata/D17-California/SOAP/2013/spectrometer/veg_index/SOAP_NDVI.tif")
+SOAP.ndvi
+
+##visualize distribution
+
+hist(SOAP.ndvi, main="NDVI for SOAP Site")
+
+# visualize raster
+plot(SOAP.ndvi, main="NDVI for SOAP Site")
+
+```
+
+```{r import-plot-centroids}
+## read in plot centroids
+SOAP_plots <- readOGR("../NEONdata/D17-California/SOAP/vector_data/",
+                      "SOAP_centroids")
+
+# Overlay the centroid points and the stem locations on the NDVI plot
+plot(SOAP.ndvi,
+     main="SOAP Plot Locations \n(N=18)",
+     col=gray.colors(100, start=.3, end=.9))
+
+# pch 0 = square
+plot(SOAP_plots,
+     pch = 0,
+     cex = 2,
+     col = 4,
+     add=TRUE)
+
+```
+
+```{r extract-ndvi-data-2m-buff}
+# Insitu sampling took place within 40m x 40m square plots, so we use a 20m radius.
+# Note that below will return a dataframe containing the max height
+# calculated from all pixels in the buffer for each plot (NEON Website)
+
+## we will use these values to populate in-situ data set
+
+NDVI.max <- extract(SOAP.ndvi,
+                    SOAP_plots,
+                    buffer = 20,
+                    fun=(max),
+                    sp=TRUE,
+                    stringsAsFactors=FALSE)
+
+
+# NDVI distribution visualization for each plot
+# created histograms for all 14 plots of data
+
+cent_ovrList <- extract(SOAP.ndvi,SOAP_plots,buffer = 20)
+
+for (i in 1:14) {
+  hist(cent_ovrList[[i]], main=(paste("plot",i)))
+  }
+
+```
+
+## Extract descriptive stats from Insitu Data
+
+```{r combine-centroid-data-and-NDVI-data}
+# import the centroid data and the vegetation structure data
+
+## Call out insitu.SOAP dataframe
+## refamilize with PlotIDs within SOAP
+unique(insitu.SOAP$plotid)
+
+# find the max parameter values for each in situ plot
+insitu.max <- insitu.SOAP %>%
+  group_by(plotid) %>%
+  summarise(max.dbh = max(dbh, na.rm=TRUE), max.dbhheight=max(dbhheight, na.rm=TRUE),
+            max.basalcanopydiam= max(basalcanopydiam, na.rm=TRUE), 
+            max.maxcanopydiam=max(maxcanopydiam), 
+            max.stemheight=max(stemheight, na.rm=TRUE),
+            max.livingcanopy=max(livingcanopy, na.rm=TRUE),
+            max.inplotcanopy= max(inplotcanopy, na.rm=TRUE))
+
+```
+
+```{r merge-data-finally}
+## merge data into data frame, can use approach to create spatial object
+## But purposes of capstone will conduct "boring regression analysis"
+## merge grouped data (insitu.max) and extracted NDVI (NDVI.max) 
+## using plotid to merge
+
+## first must append  NDVI.max file with SOAP
+
+#create data frame for NDVI.max
+
+NDVI.max.df<-NDVI.max@data
+
+# add SOAP prefix to IDs
+
+NDVI.max.df$plot.id<- "SOAP"
+NDVI.max.df$plot.id<-(sapply(NDVI.max.df$plot.id, paste0, NDVI.max.df$ID))[,1]
+
+# rename column
+
+colnames(NDVI.max.df)[colnames(NDVI.max.df) == 'SOAP'] <- 'Plot.ID'
+
+SOAP.grand<-merge(NDVI.max.df, insitu.max, 
+      by.x = 'plot.id',
+      by.y = 'plotid')
+
+# F* Yes
+
+```
+
+
+```{r regression-playground-aggregate}
+
+## Reponse variables: dbh, basalcanopydiam, maxcanopydiam, stemheight, livingcanopy, inplotcanopy
+
+## Predictor variable: SOAP_NDVI
+
+
+
+```
 
