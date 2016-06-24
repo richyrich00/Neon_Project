@@ -6,7 +6,7 @@ output: html_document
 ---
 
 
-```{r declare-your-libraries, echo=FALSE}
+```{r declare-your-libraries, message=FALSE}
 library(dplyr)
 library(raster)
 library(rhdf5)
@@ -14,6 +14,7 @@ library(rgdal)
 library(neonAOP)
 library(reshape2)
 library(ggplot2)
+library(MASS)
 
 options(stringsAsFactors = FALSE)
 
@@ -302,7 +303,87 @@ SOAP.grand<-merge(NDVI.max.df, insitu.max,
 
 ## Predictor variable: SOAP_NDVI
 
+## Simple Linear Regression
 
+## Max NDVI vs Max DBH
+mod.ndvi<-lm(max.dbh ~ SOAP_NDVI, data=SOAP.grand)
+plot(SOAP.grand$max.dbh, SOAP.grand$SOAP_NDVI, xlab="Max NDVI", ylab=" DBH (cm)")
+abline(mod.ndvi)
+
+## Max NDVI vs Max Base Canopy Diam
+mod2.ndvi<-lm(max.basalcanopydiam~ SOAP_NDVI, data=SOAP.grand)
+plot(SOAP.grand$max.basalcanopydiam, SOAP.grand$SOAP_NDVI, 
+     xlab="Max NDVI", ylab=" Base Canopy Diameter (cm)")
+abline(mod2.ndvi)
+
+## Max NDVI vs Max of the Max Canopy Diam
+mod3.ndvi<-lm(max.maxcanopydiam~SOAP_NDVI, data=SOAP.grand)
+plot(SOAP.grand$max.maxcanopydiam, SOAP.grand$SOAP_NDVI, 
+     xlab="Max NDVI", ylab=" Maximum canopy diameter(m)")
+abline(mod3.ndvi)
+
+
+## Max NDVI vs Max Stem Height
+mod4.ndvi<-lm(max.stemheight~SOAP_NDVI, data=SOAP.grand)
+plot(SOAP.grand$max.stemheight, SOAP.grand$SOAP_NDVI, 
+     xlab="Max NDVI", ylab=" Stem Height (m)")
+abline(mod4.ndvi)
+
+
+
+
+```
+
+## create a qualitative landscape assessment index (completely experimental- BE NICE!)
+
+```{r create-tree-growth-potential-index}
+#subset SOAP.grand data set
+
+s<-subset(SOAP.grand, select = c(plot.id, easting, northing, max.dbh, max.dbhheight, max.basalcanopydiam, max.maxcanopydiam, max.stemheight))
+
+## categorize by quartiles, use quantile values from summary and assign score
+
+# dbh
+summary(s$max.dbh)
+dbh.cat <- cut(s$max.dbh, breaks = c(-1, 41.38, 62.70, 88.72, 159.8))
+dbh.cat<-unclass(dbh.cat)
+
+
+#basalcanopydiam
+summary(s$max.basalcanopydiam)
+basalcanopydiam.cat<- cut(s$max.basalcanopydiam, breaks= c(0, 39.50, 59.0, 77.00, 222.00))
+basalcanopydiam.cat<- unclass(basalcanopydiam.cat)
+
+# maxcanopydiam
+summary(s$max.maxcanopydiam)
+
+## impute missing value at Plot SOAP331
+s[ 8, 7] <- mean(SOAP.grand$max.maxcanopydiam, na.rm=TRUE)
+
+# determine class quantiles scores
+summary(s$max.maxcanopydiam)
+max.maxcanopydiam.cat<-cut(s$max.maxcanopydiam, breaks= c(0, 6.375, 10.80, 17.660, 80.00))
+basalcanopydiam.cat<-unclass(basalcanopydiam.cat)
+
+s<-data.frame(dbh.cat,basalcanopydiam.cat,basalcanopydiam.cat) 
+
+tree.score<-rowSums(s)
+
+s$tree.score<-tree.score
+s$tree.score.perc<- (tree.score/12)
+
+## add on to SOAP.grand dataset
+
+SOAP.grand<-c(SOAP.grand,s)
+
+boxplot(s$tree.score.perc)
+
+```
+
+```{r regression-using-tree.growth.potential.score}
+## simple linear regression using tree score ()
+
+lm(tree.score.perc~SOAP_NDVI, data=SOAP.grand)
 
 ```
 

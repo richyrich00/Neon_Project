@@ -1,0 +1,262 @@
+---
+title: "Remigio-Capstone-InSitu"
+author: "R. Remigio"
+date: "June 23, 2016"
+output: html_document
+---
+
+
+```{r declare-your-libraries, echo=FALSE}
+library(dplyr)
+library(raster)
+library(rhdf5)
+library(rgdal)
+library(neonAOP)
+library(reshape2)
+library(ggplot2)
+
+options(stringsAsFactors = FALSE)
+
+```
+
+## Import D17-SOAP Field Data
+
+```{r import-insitu}
+
+## read in file
+insitu.SOAP<-read.csv("/Users/R-Files/Documents/data/NEONDI-2016/NEONdata/D17-California/SOAP/2013/insitu/veg-structure/D17_2013_SOAP_vegStr.csv")
+
+## visualize structure
+str(insitu.SOAP)
+
+#summarize
+summary(insitu.SOAP)
+
+
+```
+
+
+## Exploratory Analysis: Subset variables of interest and identify data type (Cat & Cont)
+
+```{r select-variables}
+
+#  selected potential predictors of interest at SOAP 2013
+
+# plotid, taxonid, scientificname, dbh, dbhheight, basalCanopyDiam, Maximum canopy diameter, stemheight
+# canopyform, livingcanopy,  inplotcanopy
+
+# subset dataframe-- make it not dirty
+insitu.SOAP<-subset(insitu.SOAP, select=c(plotid, easting, northing, taxonid, scientificname, dbh, dbhheight, basalcanopydiam, maxcanopydiam, stemheight, canopyform, livingcanopy,  inplotcanopy))
+
+```
+
+
+## Extract CHM for SOAP
+
+```{r extract-L3-NDVI-SOAP-site}
+## import chm
+SOAP.chm <- raster("../NEONdata/D17-California/SOAP/2013/lidar/SOAP_lidarCHM.tif")
+SOAP.chm
+
+##visualize distribution
+
+hist(SOAP.chm, main="CHM for SOAP Site")
+
+SOAP.chm[SOAP.chm==0] <- NA
+
+# sanity check
+hist(SOAP.chm, main="CHM for SOAP Site")
+
+```
+
+```{r import-plot-centroids}
+## read in plot centroids
+SOAP_plots <- readOGR("../NEONdata/D17-California/SOAP/vector_data/",
+                      "SOAP_centroids")
+
+# Overlay the centroid points and the stem locations on the NDVI plot
+plot(SOAP.chm,
+     main="SOAP Plot Locations \n(N=18)",
+     col=gray.colors(100, start=.3, end=.9))
+
+# pch 0 = square
+plot(SOAP_plots,
+     pch = 0,
+     cex = 2,
+     col = 4,
+     add=TRUE)
+
+```
+
+```{r extract-ndvi-data-20m-buff}
+# Insitu sampling took place within 40m x 40m square plots, so we use a 20m radius.
+# Note that below will return a dataframe containing the max height
+# calculated from all pixels in the buffer for each plot (NEON Website)
+
+## we will use these values to populate in-situ data set
+
+chm.max <- extract(SOAP.chm,
+                    SOAP_plots,
+                    buffer = 20,
+                    fun=(max),
+                    sp=TRUE,
+                    stringsAsFactors=FALSE)
+
+
+# NDVI distribution visualization for each plot
+# created histograms for all 14 plots of data
+
+cent_ovrList <- extract(SOAP.chm,SOAP_plots,buffer = 20)
+
+for (i in 1:14) {
+  hist(cent_ovrList[[i]], main=(paste("plot",i)))
+  }
+
+```
+
+## Extract descriptive stats from Insitu Data
+
+```{r combine-centroid-data-and-NDVI-data}
+# import the centroid data and the vegetation structure data
+
+## Call out insitu.SOAP dataframe
+## refamilize with PlotIDs within SOAP
+unique(insitu.SOAP$plotid)
+
+# find the max parameter values for each in situ plot
+insitu.max <- insitu.SOAP %>%
+  group_by(plotid) %>%
+  summarise(max.dbh = max(dbh, na.rm=TRUE), max.dbhheight=max(dbhheight, na.rm=TRUE),
+            max.basalcanopydiam= max(basalcanopydiam, na.rm=TRUE), 
+            max.maxcanopydiam=max(maxcanopydiam), 
+            max.stemheight=max(stemheight, na.rm=TRUE),
+            max.livingcanopy=max(livingcanopy, na.rm=TRUE),
+            max.inplotcanopy= max(inplotcanopy, na.rm=TRUE))
+
+```
+
+```{r merge-data-finally}
+## merge data into data frame, can use approach to create spatial object
+## But purposes of capstone will conduct "boring regression analysis"
+## merge grouped data (insitu.max) and extracted NDVI (NDVI.max) 
+## using plotid to merge
+
+## first must append  NDVI.max file with SOAP
+
+#create data frame for NDVI.max
+
+chm.max.df<-chm.max@data
+
+# add SOAP prefix to IDs
+
+chm.max.df$plot.id<- "SOAP"
+chm.max.df$plot.id<-(sapply(chm.max.df$plot.id, paste0, chm.max.df$ID))[,1]
+
+# rename column
+
+colnames(chm.max.df)[colnames(chm.max.df) == 'SOAP'] <- 'Plot.ID'
+
+SOAP.grand<-merge(chm.max.df, insitu.max, 
+      by.x = 'plot.id',
+      by.y = 'plotid')
+
+# F* Yes
+
+```
+
+
+```{r regression-playground-aggregate}
+## Response variables: dbh, basalcanopydiam, maxcanopydiam, stemheight, livingcanopy, inplotcanopy
+
+## Predictor variable: SOAP_lidarCHM
+
+## Simple Linear Fit
+
+mod.chm<-lm(max.dbh~SOAP_lidarCHM, data=SOAP.grand)
+plot(SOAP.grand$max.dbh, SOAP.grand$SOAP_lidarCHM, 
+     xlab="Max CHM", ylab=" DBH (cm)")
+abline(mod.chm)
+summary(mod.chm)
+
+mod2.chm<-lm(max.basalcanopydiam~SOAP_lidarCHM, data=SOAP.grand)
+plot(SOAP.grand$max.basalcanopydiam, SOAP.grand$SOAP_lidarCHM, 
+     xlab="Max CHM", ylab=" Base Canopy Diameter (cm)")
+abline(mod2.chm)
+summary(mod2.chm)
+
+mod3.chm<-lm(max.maxcanopydiam~SOAP_lidarCHM, data=SOAP.grand)
+plot(SOAP.grand$max.maxcanopydiam, SOAP.grand$SOAP_lidarCHM, 
+     xlab="Max CHM", ylab=" Maximum canopy diameter(m)")
+abline(mod3.chm)
+summary(mod3.chm)
+
+mod4.chm<-lm(max.stemheight~SOAP_lidarCHM, data=SOAP.grand)
+plot(SOAP.grand$max.stemheight, SOAP.grand$SOAP_lidarCHM, 
+     xlab="Max CHM", ylab=" Stem Height (m)")
+abline(mod4.chm)
+summary(mod4.chm)
+
+mod5.chm<-lm(max.livingcanopy~SOAP_lidarCHM, data=SOAP.grand)
+plot(SOAP.grand$max.livingcanopy, SOAP.grand$SOAP_lidarCHM,
+     xlab="Max CHM", ylab=" Perc Est Living Canopy (%)")
+abline(mod5.chm)
+summary(mod5.chm)
+
+```
+
+## create a qualitative landscape assessment index (completely experimental- BE NICE!)
+
+```{r create-tree-growth-potential-index}
+#subset SOAP.grand data set
+
+s<-subset(SOAP.grand, select = c(plot.id, easting, northing, max.dbh, max.dbhheight, max.basalcanopydiam, max.maxcanopydiam, max.stemheight))
+
+## categorize by quartiles, use quantile values from summary and assign score
+
+# dbh
+summary(s$max.dbh)
+dbh.cat <- cut(s$max.dbh, breaks = c(-1, 41.38, 62.70, 88.72, 159.8))
+dbh.cat<-unclass(dbh.cat)
+
+
+#basalcanopydiam
+summary(s$max.basalcanopydiam)
+basalcanopydiam.cat<- cut(s$max.basalcanopydiam, breaks= c(0, 39.50, 59.0, 77.00, 222.00))
+basalcanopydiam.cat<- unclass(basalcanopydiam.cat)
+
+# maxcanopydiam
+summary(s$max.maxcanopydiam)
+
+## impute missing value at Plot SOAP331
+s[ 8, 7] <- mean(SOAP.grand$max.maxcanopydiam, na.rm=TRUE)
+
+# determine class quantiles scores
+summary(s$max.maxcanopydiam)
+max.maxcanopydiam.cat<-cut(s$max.maxcanopydiam, breaks= c(0, 6.375, 10.80, 17.660, 80.00))
+basalcanopydiam.cat<-unclass(basalcanopydiam.cat)
+
+s<-data.frame(dbh.cat,basalcanopydiam.cat,basalcanopydiam.cat) 
+
+tree.score<-rowSums(s)
+
+s$tree.score<-tree.score
+s$tree.score.perc<- (tree.score/12)
+
+## add on to SOAP.grand dataset
+
+SOAP.grand<-c(SOAP.grand,s)
+
+boxplot(s$tree.score.perc)
+
+```
+
+```{r regression-using-tree.growth.potential.score}
+## simple linear regression using tree score ()
+
+chm.score<-lm(tree.score.perc~SOAP_lidarCHM, data=SOAP.grand)
+
+summary(chm.score)
+
+```
+
+
