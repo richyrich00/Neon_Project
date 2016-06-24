@@ -12,6 +12,7 @@ library(raster)
 library(rhdf5)
 library(rgdal)
 library(neonAOP)
+library(reshape2)
 
 
 ```
@@ -54,21 +55,123 @@ SOAP.cont<- subset(insitu.SOAP, select=c(dbh, dbhheight, basalcanopydiam, maxcan
 ```
 
 
-## Exploratory Analysis- Frequency Categorical Statistics
+## Exploratory Analysis for SOAP- Frequency Categorical Statistics
 ```{r summary-statistics-cateogrical}
 
-## Categorical summaries
-freq.plotid<-summary(SOAP.cat$plotid)
-freq.scientificname<-summary(SOAP.cat$scientificname)
-freq.canopyform<- summary(SOAP.cat$canopyform)
+## frequency summaries by:
+
+# plotid
+SOAP.cat %>%
+  group_by(plotid) %>%
+  summarise (n = n()) %>%
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 1), "%"))
+
+# dominant(?) plant type
+
+SOAP.cat %>%
+  group_by(scientificname) %>%
+  summarise (n = n()) %>%
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 1), "%"))
+
+# canopyform
+
+SOAP.cat %>%
+  group_by(canopyform) %>%
+  summarise (n = n()) %>%
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 1), "%"))
+
 
 ```
 
-## Exploratory Analysis- Summary Continuous Statistics 
+## Exploratory Analysis for SOAP- Summary Continuous Statistics
 ```{r summary-statistics-continuous}
-## Continuous variable summaries
+## Continuous variable summaries- Min/Max, Quants
 summary(SOAP.cont)
+
+## Continuous variable summaries- Std Devs
+sapply(SOAP.cont, sd, na.rm=TRUE)
+
+# matrix scatterplot
+plot(SOAP.cont)
+
+#side by side boxplots
 boxplot(SOAP.cont, las=2)
 
+```
+
+## Exploratory Analysis for SOAP by Sampling Plots
+
+```{r exploratory-analysis-by-plots}
+## by species types by PlotID
+
+xtabs(~plotid+scientificname, data=SOAP.cat)
+
+
+## aggregate summary stats 
+#  Re-instate PlotID
+
+SOAP.cont$plotid<-insitu.SOAP$plotid
+
+# group by
+melted <- melt(SOAP.cont, id.vars=c("plotid"))
+
+SOAP.aggregate<-summarise(group_by(melted, plotid, variable),
+          mean=mean(value, na.rm=TRUE), sd=sd(value, na.rm=TRUE), 
+          min=min(value, na.rm=TRUE), max=max(value, na.rm=TRUE))
+ 
+SOAP.aggregate
+
+## WHOA-- That's a big spicy meatball!
+## Break it down by plot again-- this time stratify by parameter
+
+# dbh
+ insitu_dbh <- SOAP.cont %>%
+   group_by(plotid) %>%
+   summarise(dbh.min = min(dbh, na.rm=TRUE), dbh.max = max(dbh, na.rm=TRUE), dbh.mean=mean(dbh, na.rm=TRUE), dbh.median=median(dbh, na.rm=TRUE),dbh.sd=sd(dbh, na.rm=TRUE))
+             
+
+## functionalization might be best here...but for now 
+ ## JV scripting
+
+ 
+  # dbhheight
+ insitu_dbhheight <- SOAP.cont %>%
+   group_by(plotid) %>%
+   summarise(dbhheight.min = min(dbhheight, na.rm=TRUE), dbhheight.max = max(dbhheight, na.rm=TRUE), dbhheight.mean=mean(dbhheight, na.rm=TRUE), dbhheight.median=median(dbhheight, na.rm=TRUE),dbhheight.sd=sd(dbhheight, na.rm=TRUE))
+ 
+ # basalcanopydiam
+ insitu_basalcanopydiam <- SOAP.cont %>%
+   group_by(plotid) %>%
+   summarise(basalcanopydiam.min = min(basalcanopydiam, na.rm=TRUE), basalcanopydiam.max = max(basalcanopydiam, na.rm=TRUE), basalcanopydiam.mean=mean(basalcanopydiam, na.rm=TRUE), basalcanopydiam.median=median(basalcanopydiam, na.rm=TRUE),basalcanopydiam.sd=sd(basalcanopydiam, na.rm=TRUE))
+ 
+ 
+ # maxcanopydiam
+ insitu_maxcanopydiam <- SOAP.cont %>%
+   group_by(plotid) %>%
+   summarise(maxcanopydiam.min = min(maxcanopydiam, na.rm=TRUE), maxcanopydiam.max = max(maxcanopydiam, na.rm=TRUE), maxcanopydiam.mean=mean(maxcanopydiam, na.rm=TRUE), maxcanopydiam.median=median(maxcanopydiam, na.rm=TRUE),maxcanopydiam.sd=sd(maxcanopydiam, na.rm=TRUE))
+ 
+  # stemheight
+ insitu_stemheight <- SOAP.cont %>%
+   group_by(plotid) %>%
+   summarise(stemheight.min = min(stemheight, na.rm=TRUE), stemheight.max = max(stemheight, na.rm=TRUE), stemheight.mean=mean(stemheight, na.rm=TRUE), stemheight.median=median(stemheight, na.rm=TRUE),stemheight.sd=sd(stemheight, na.rm=TRUE))
+ 
+  # livingcanopy
+ insitu_livingcanopy <- SOAP.cont %>%
+   group_by(plotid) %>%
+   summarise(livingcanopy.min = min(livingcanopy, na.rm=TRUE), livingcanopy.max = max(livingcanopy, na.rm=TRUE), livingcanopy.mean=mean(livingcanopy, na.rm=TRUE), livingcanopy.median=median(livingcanopy, na.rm=TRUE),livingcanopy.sd=sd(livingcanopy, na.rm=TRUE))
+  
+ 
+   # inplotcanopy
+ insitu_inplotcanopy <- SOAP.cont %>%
+   group_by(plotid) %>%
+   summarise(inplotcanopy.min = min(inplotcanopy, na.rm=TRUE), inplotcanopy.max = max(inplotcanopy, na.rm=TRUE), inplotcanopy.mean=mean(inplotcanopy, na.rm=TRUE), inplotcanopy.median=median(inplotcanopy, na.rm=TRUE),inplotcanopy.sd=sd(inplotcanopy, na.rm=TRUE))
+  
+    # inplotcanopy
+ 
+ insitu_inplotcanopy <- SOAP.cont %>%
+   group_by(plotid) %>%
+   summarise(inplotcanopy.min = min(inplotcanopy, na.rm=TRUE), inplotcanopy.max = max(inplotcanopy, na.rm=TRUE), inplotcanopy.mean=mean(inplotcanopy, na.rm=TRUE), inplotcanopy.median=median(inplotcanopy, na.rm=TRUE),inplotcanopy.sd=sd(inplotcanopy, na.rm=TRUE))
+  
+ 
 ```
 
