@@ -15,6 +15,7 @@ library(neonAOP)
 library(reshape2)
 library(ggplot2)
 library(MASS)
+library(stargazer)
 
 options(stringsAsFactors = FALSE)
 
@@ -98,7 +99,10 @@ sapply(SOAP.cont, sd, na.rm=TRUE)
 plot(SOAP.cont)
 
 #side by side boxplots
+par(mar=c(9,5,1,1))
 boxplot(SOAP.cont, las=2)
+
+
 
 ```
 
@@ -370,7 +374,7 @@ summary(SOAP.grand$max.stemheight)
 max.stemheight.cat<-cut(SOAP.grand$max.stemheight, breaks= c(0,12.40,30.55, 42.18, 134))
 max.stemheight.cat<-unclass(max.stemheight.cat)
 
-s<-data.frame(dbh.cat,basalcanopydiam.cat,basalcanopydiam.cat,max.stemheight.cat) 
+s<-data.frame(dbh.cat, max.basalcanopydiam.cat,max.basalcanopydiam.cat,max.stemheight.cat) 
 
 tree.score<-rowSums(s)
 
@@ -388,7 +392,7 @@ boxplot(s$tree.score.perc)
 ```{r regression-using-tree.growth.potential.score-ndvi}
 ## simple linear regression using tree score ()
 
-NDVI.score<-summary(lm(tree.score.perc~SOAP_NDVI, data=SOAP.grand))
+mod5.ndvi<-lm(tree.score.perc~SOAP_NDVI, data=SOAP.grand)
 
 ## also- makesure you append CHM values from other data stack to model
 
@@ -397,7 +401,8 @@ NDVI.score<-summary(lm(tree.score.perc~SOAP_NDVI, data=SOAP.grand))
 ```{r import-chm}
 ## import chm
 SOAP.chm <- raster("../NEONdata/D17-California/SOAP/2013/lidar/SOAP_lidarCHM.tif")
-SOAP.chm
+SOAP.chm[SOAP.chm==0]<- NA
+plot(SOAP.chm, main="Canopy Height Model for SOAP Site")
 
 ```
 
@@ -502,31 +507,54 @@ boxplot(s$tree.score.perc)
 ```{r regression-using-tree.growth.potential.score-chm}
 ## simple linear regression using tree score 
 
-chm.score<-summary(lm(tree.score.perc~SOAP_lidarCHM, data=SOAP.grand))
-chm.score
+mod5.chm<-lm(tree.score.perc~SOAP_lidarCHM, data=SOAP.grand)
+mod5.chm
 ```
 
 ```{r multivariable-regression-chm-and-ndvi}
 ## Full model in respect to dbh
-mod.full.dbh <- summary(lm(max.dbh~SOAP_lidarCHM + SOAP_NDVI, data=SOAP.grand))
-(mod.full.dbh)
+mod.full<- lm(max.dbh~SOAP_lidarCHM + SOAP_NDVI, data=SOAP.grand)
+mod.full
 
 
 ## Full model in respect to base canopy diameter
-mod.full.bascalcanopydiam<-summary(lm(max.basalcanopydiam~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
-(mod.full.bascalcanopydiam)
+mod2.full<-lm(max.basalcanopydiam~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand)
+mod2.full
 
 
 ## Full model in respect to max canopy
-mod.full.maxcanopydiam<-summary(lm(max.maxcanopydiam~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
-
-(mod.full.maxcanopydiam)
+mod3.full<-lm(max.maxcanopydiam~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand)
+mod3.full
 
 ## Full model in respect to stem height
-mod.full.stemheight<-summary(lm(max.stemheight~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
-(mod.full.stemheight)
-
+mod4.full<-lm(max.stemheight~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand)
+mod4.full
 
 ## Full model in respect to % score
-mod.full.score.perc<-summary(lm(tree.score.perc~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
-(mod.full.score.perc)
+mod5.full<- lm(tree.score.perc~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand)
+mod5.full
+
+```
+
+```{r stargazer-products}
+#descriptive statistics for in-situ field data products
+stargazer(SOAP.cont, type = "text", title="SOAP-wide Descriptive statistics", digits=1, out="SOAPwideStats.txt")
+
+stargazer(data.frame(insitu.max), type = "text", title="Maximum Value Plot-wide Descriptive statistics", digits=1, out="PlotwideStats-freq.txt")
+
+## regression products
+
+## NDVI-only
+
+stargazer(mod.ndvi, mod2.ndvi, mod3.ndvi, mod4.ndvi, mod5.ndvi, type="html", dep.var.labels=c("dbh,cm", "basalCanopyDiam,cm", "maxCanopyDiam,m", "stemHeight,m", "Combinatory Tree Index(-)"),covariate.labels=("NDVI"), ci=TRUE, note= "NDVI as the only predictor. Maximum NDVI values determined from 20 ft buffers at each respective SOAP station ", out="NDVImodels2.htm")
+
+## CHM-only
+stargazer(mod.chm, mod2.chm, mod3.chm, mod4.chm, mod5.chm, type="html", dep.var.labels=c("dbh,cm", "basalCanopyDiam,cm", "maxCanopyDiam,m", "stemHeight,m", "Combinatory Tree Index(-)"),covariate.labels=("CHM"), ci=TRUE, note= "CHM as the only predictor. Maximum CHM values determined from 20 ft buffers at each respective SOAP station ", out="CHMmodels2.htm")
+
+## Full (NDVI + CHM)
+
+stargazer(mod.full, mod2.full, mod3.full, mod4.full, mod5.full, type="html", dep.var.labels=c("dbh,cm", "basalCanopyDiam,cm", "maxCanopyDiam,m", "stemHeight,m", "Combinatory Tree Index(-)"),covariate.labels=("NDVI+ CHM"), ci=TRUE, note= "NDVI and CHM as predictors. Maximum NDVI and CHM values determined from 20 ft buffers at each respective SOAP station ", out="Fullmodels.htm2")
+
+
+```
+

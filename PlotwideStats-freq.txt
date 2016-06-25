@@ -1,0 +1,13 @@
+
+Maximum Value Plot-wide Descriptive statistics
+===============================================
+Statistic           N  Mean  St. Dev. Min  Max 
+-----------------------------------------------
+max.dbh             18 53.9    43.4   0.0 159.8
+max.dbhheight       18 108.9   50.2    0   140 
+max.basalcanopydiam 18 88.1    52.0   30   220 
+max.maxcanopydiam   17 18.1    21.4   3.8 80.0 
+max.stemheight      18 31.3    38.3   1.4 134.0
+max.livingcanopy    14 100.0   0.0    100  100 
+max.inplotcanopy    14 100.0   0.0    100  100 
+-----------------------------------------------

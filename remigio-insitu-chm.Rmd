@@ -88,7 +88,7 @@ plot(SOAP_plots,
 
 ```
 
-```{r extract-ndvi-data-20m-buff}
+```{r extract-chmi-data-20m-buff}
 # Insitu sampling took place within 40m x 40m square plots, so we use a 20m radius.
 # Note that below will return a dataframe containing the max height
 # calculated from all pixels in the buffer for each plot (NEON Website)
@@ -103,7 +103,7 @@ chm.max <- extract(SOAP.chm,
                     stringsAsFactors=FALSE)
 
 
-# NDVI distribution visualization for each plot
+# CHM distribution visualization for each plot
 # created histograms for all 14 plots of data
 
 cent_ovrList <- extract(SOAP.chm,SOAP_plots,buffer = 20)
@@ -116,7 +116,7 @@ for (i in 1:14) {
 
 ## Extract descriptive stats from Insitu Data
 
-```{r combine-centroid-data-and-NDVI-data}
+```{r combine-centroid-data-and-CHM-data}
 # import the centroid data and the vegetation structure data
 
 ## Call out insitu.SOAP dataframe
@@ -253,7 +253,7 @@ boxplot(s$tree.score.perc)
 ```{r regression-using-tree.growth.potential.score}
 ## simple linear regression using tree score ()
 
-chm.score<-lm(tree.score.perc~SOAP_lidarCHM, data=SOAP.grand)
+chm.score<-summary(lm(tree.score.perc~SOAP_lidarCHM, data=SOAP.grand))
 
 summary(chm.score)
 
