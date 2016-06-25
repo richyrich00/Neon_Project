@@ -102,6 +102,16 @@ plot(SOAP.cont)
 par(mar=c(9,5,1,1))
 boxplot(SOAP.cont, las=2)
 
+## boxplot by station ID
+dat<-subset(x = insitu.SOAP, select= c(plotid, dbh, basalcanopydiam, maxcanopydiam, stemheight), na.rm=TRUE)
+
+par(mfrow=c(2,2))
+boxplot(dbh~plotid, data=dat, las=2, main="dbh (cm)")
+boxplot(basalcanopydiam~plotid, data=dat, las=2, main="basalcanopydiam (cm)")
+boxplot(maxcanopydiam~plotid, data=dat, las=2, main="maxcanopydiam (m)")
+boxplot(stemheight~plotid, data=dat, las=2, main="stemheight (m)")
+
+
 
 
 ```
@@ -374,12 +384,23 @@ summary(SOAP.grand$max.stemheight)
 max.stemheight.cat<-cut(SOAP.grand$max.stemheight, breaks= c(0,12.40,30.55, 42.18, 134))
 max.stemheight.cat<-unclass(max.stemheight.cat)
 
-s<-data.frame(dbh.cat, max.basalcanopydiam.cat,max.basalcanopydiam.cat,max.stemheight.cat) 
+s<-data.frame(dbh.cat, max.basalcanopydiam.cat,max.maxcanopydiam.cat,max.stemheight.cat) 
+
+colnames(s)<-c("dbh", "basalcanopydial", "maxcanopydiam", "stemheight")
 
 tree.score<-rowSums(s)
 
 s$tree.score<-tree.score
 s$tree.score.perc<- (tree.score/16)
+
+n<-data.frame(c(SOAP.grand$plot.id),s)
+
+colnames(n)= c("plotid","dbh", "basalcanopydial", "maxcanopydiam", "stemheight", "Score", "% Score")
+
+## polished score table
+stargazer(n, type="html", out="score.table.htm")
+stargazer(n, type="text", out="score.table.txt")
+
 
 ## add on to SOAP.grand dataset
 
