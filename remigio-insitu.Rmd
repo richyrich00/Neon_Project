@@ -22,7 +22,7 @@ options(stringsAsFactors = FALSE)
 
 ## Import D17-SOAP Field Data
 
-```{r import-insitu}
+```{r import-insitu, message=FALSE}
 
 ## read in file
 insitu.SOAP<-read.csv("/Users/R-Files/Documents/data/NEONDI-2016/NEONdata/D17-California/SOAP/2013/insitu/veg-structure/D17_2013_SOAP_vegStr.csv")
@@ -39,7 +39,7 @@ summary(insitu.SOAP)
 
 ## Exploratory Analysis: Subset variables of interest and identify data type (Cat & Cont)
 
-```{r select-variables}
+```{r select-variables, message=FALSE}
 
 #  selected potential predictors of interest at SOAP 2013
 
@@ -187,7 +187,7 @@ options(dplyr.width = Inf)
 
 ## Let's Extract Some Vegetation Indices for SOAP
 
-```{r extract-L3-NDVI-SOAP-site}
+```{r extract-L3-NDVI-SOAP-site, message=FALSE}
 ## import NDVI
 SOAP.ndvi <- raster("../NEONdata/D17-California/SOAP/2013/spectrometer/veg_index/SOAP_NDVI.tif")
 SOAP.ndvi
@@ -201,7 +201,7 @@ plot(SOAP.ndvi, main="NDVI for SOAP Site")
 
 ```
 
-```{r import-plot-centroids}
+```{r import-plot-centroids, message=FALSE}
 ## read in plot centroids
 SOAP_plots <- readOGR("../NEONdata/D17-California/SOAP/vector_data/",
                       "SOAP_centroids")
@@ -220,7 +220,7 @@ plot(SOAP_plots,
 
 ```
 
-```{r extract-ndvi-data-2m-buff}
+```{r extract-ndvi-data-20m-buff, message=FALSE}
 # Insitu sampling took place within 40m x 40m square plots, so we use a 20m radius.
 # Note that below will return a dataframe containing the max height
 # calculated from all pixels in the buffer for each plot (NEON Website)
