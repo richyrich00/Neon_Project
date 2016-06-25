@@ -297,7 +297,7 @@ SOAP.grand<-merge(NDVI.max.df, insitu.max,
 ```
 
 
-```{r regression-playground-aggregate}
+```{r regression-playground-aggregate-ndvi}
 
 ## Reponse variables: dbh, basalcanopydiam, maxcanopydiam, stemheight, livingcanopy, inplotcanopy
 
@@ -380,10 +380,148 @@ boxplot(s$tree.score.perc)
 
 ```
 
-```{r regression-using-tree.growth.potential.score}
+```{r regression-using-tree.growth.potential.score-ndvi}
 ## simple linear regression using tree score ()
 
-lm(tree.score.perc~SOAP_NDVI, data=SOAP.grand)
+NDVI.score<-summary(lm(tree.score.perc~SOAP_NDVI, data=SOAP.grand))
+
+## also- makesure you append CHM values from other data stack to model
 
 ```
 
+```{r import-chm}
+## import chm
+SOAP.chm <- raster("../NEONdata/D17-California/SOAP/2013/lidar/SOAP_lidarCHM.tif")
+SOAP.chm
+
+```
+
+
+```{r extract-chm-data-20m-buff}
+
+
+# Insitu sampling took place within 40m x 40m square plots, so we use a 20m radius.
+# Note that below will return a dataframe containing the max height
+# calculated from all pixels in the buffer for each plot (NEON Website)
+
+## we will use these values to populate in-situ data set
+
+chm.max <- extract(SOAP.chm,
+                    SOAP_plots,
+                    buffer = 20,
+                    fun=(max),
+                    sp=TRUE,
+                    stringsAsFactors=FALSE)
+
+
+# CHM distribution visualization for each plot
+# created histograms for all 14 plots of data
+
+cent_ovrList <- extract(SOAP.chm,SOAP_plots,buffer = 20)
+
+for (i in 1:14) {
+  hist(cent_ovrList[[i]], main=(paste("plot",i)))
+  }
+
+```
+
+```{r merge-data-ALL}
+## merge data into data frame, can use approach to create spatial object
+## But purposes of capstone will conduct "boring regression analysis"
+## merge grouped data (insitu.max) and extracted NDVI (NDVI.max) 
+## using plotid to merge
+
+## first must append  NDVI.max file with SOAP
+
+#create data frame for NDVI.max
+
+chm.max.df<-chm.max@data
+
+# add SOAP prefix to IDs
+
+chm.max.df$plot.id<- "SOAP"
+chm.max.df$plot.id<-(sapply(chm.max.df$plot.id, paste0, chm.max.df$ID))[,1]
+
+# rename column
+
+colnames(chm.max.df)[colnames(chm.max.df) == 'SOAP'] <- 'Plot.ID'
+
+SOAP.grand<-merge(chm.max.df, SOAP.grand, 
+      by.x = 'plot.id',
+      by.y = 'plot.id')
+
+# F* Yes
+
+```
+
+```{r regression-playground-aggregate-chm}
+## Response variables: dbh, basalcanopydiam, maxcanopydiam, stemheight, livingcanopy, inplotcanopy
+
+## Predictor variable: SOAP_lidarCHM
+
+## Simple Linear Fit
+
+mod.chm<-lm(max.dbh~SOAP_lidarCHM, data=SOAP.grand)
+plot(SOAP.grand$max.dbh, SOAP.grand$SOAP_lidarCHM, 
+     xlab="Max CHM", ylab=" DBH (cm)")
+abline(mod.chm)
+summary(mod.chm)
+
+mod2.chm<-lm(max.basalcanopydiam~SOAP_lidarCHM, data=SOAP.grand)
+plot(SOAP.grand$max.basalcanopydiam, SOAP.grand$SOAP_lidarCHM, 
+     xlab="Max CHM", ylab=" Base Canopy Diameter (cm)")
+abline(mod2.chm)
+summary(mod2.chm)
+
+mod3.chm<-lm(max.maxcanopydiam~SOAP_lidarCHM, data=SOAP.grand)
+plot(SOAP.grand$max.maxcanopydiam, SOAP.grand$SOAP_lidarCHM, 
+     xlab="Max CHM", ylab=" Maximum canopy diameter(m)")
+abline(mod3.chm)
+summary(mod3.chm)
+
+mod4.chm<-lm(max.stemheight~SOAP_lidarCHM, data=SOAP.grand)
+plot(SOAP.grand$max.stemheight, SOAP.grand$SOAP_lidarCHM, 
+     xlab="Max CHM", ylab=" Stem Height (m)")
+abline(mod4.chm)
+summary(mod4.chm)
+
+
+
+## add on to SOAP.grand dataset
+
+SOAP.grand<-c(SOAP.grand,s)
+boxplot(s$tree.score.perc)
+
+```
+
+```{r regression-using-tree.growth.potential.score-chm}
+## simple linear regression using tree score 
+
+chm.score<-summary(lm(tree.score.perc~SOAP_lidarCHM, data=SOAP.grand))
+chm.score
+```
+
+```{r multivariable-regression-chm-and-ndvi}
+## Full model in respect to dbh
+mod.full.dbh <- summary(lm(max.dbh~SOAP_lidarCHM + SOAP_NDVI, data=SOAP.grand))
+summary(mod.full.dbh)
+
+
+## Full model in respect to base canopy diameter
+mod.full.bascalcanopydiam<-summary(lm(max.basalcanopydiam~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
+summary(mod.full.bascalcanopydiam)
+
+
+## Full model in respect to max canopy
+mod.full.maxcanopydiam<-summary(lm(max.maxcanopydiam~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
+
+summary(mod.full.maxcanopydiam)
+
+## Full model in respect to stem height
+mod.full.stemheight<-summary(lm(max.stemheight~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
+summary(mod.full.stemheight)
+
+
+## Full model in respect to % score
+mod.full.score.perc<-summary(lm(tree.score.perc~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
+summary(mod.full.score.perc)
