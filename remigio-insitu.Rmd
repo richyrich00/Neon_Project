@@ -339,38 +339,43 @@ abline(mod4.ndvi)
 ```{r create-tree-growth-potential-index}
 #subset SOAP.grand data set
 
-s<-subset(SOAP.grand, select = c(plot.id, easting, northing, max.dbh, max.dbhheight, max.basalcanopydiam, max.maxcanopydiam, max.stemheight))
+#s<-subset(SOAP.grand, select = c(plot.id, easting, northing, max.dbh, max.dbhheight, max.basalcanopydiam, max.maxcanopydiam, max.stemheight))
 
 ## categorize by quartiles, use quantile values from summary and assign score
 
 # dbh
-summary(s$max.dbh)
-dbh.cat <- cut(s$max.dbh, breaks = c(-1, 41.38, 62.70, 88.72, 159.8))
+summary(SOAP.grand$max.dbh)
+dbh.cat <- cut(SOAP.grand$max.dbh, breaks = c(-1, 41.38, 62.70, 88.72, 159.8))
 dbh.cat<-unclass(dbh.cat)
 
 
 #basalcanopydiam
-summary(s$max.basalcanopydiam)
-basalcanopydiam.cat<- cut(s$max.basalcanopydiam, breaks= c(0, 39.50, 59.0, 77.00, 222.00))
-basalcanopydiam.cat<- unclass(basalcanopydiam.cat)
+summary(SOAP.grand$max.basalcanopydiam)
+max.basalcanopydiam.cat<- cut(SOAP.grand$max.basalcanopydiam, breaks= c(0, 39.50, 59.0, 77.00, 222.00))
+max.basalcanopydiam.cat<- unclass(max.basalcanopydiam.cat)
 
 # maxcanopydiam
-summary(s$max.maxcanopydiam)
+summary(SOAP.grand$max.maxcanopydiam)
 
 ## impute missing value at Plot SOAP331
-s[ 8, 7] <- mean(SOAP.grand$max.maxcanopydiam, na.rm=TRUE)
+SOAP.grand$max.maxcanopydiam[8] <- mean(SOAP.grand$max.maxcanopydiam, na.rm=TRUE)
 
 # determine class quantiles scores
-summary(s$max.maxcanopydiam)
-max.maxcanopydiam.cat<-cut(s$max.maxcanopydiam, breaks= c(0, 6.375, 10.80, 17.660, 80.00))
-basalcanopydiam.cat<-unclass(basalcanopydiam.cat)
+summary(SOAP.grand$max.maxcanopydiam)
+max.maxcanopydiam.cat<-cut(SOAP.grand$max.maxcanopydiam, breaks= c(0, 6.375, 10.80, 17.660, 80.00))
+max.maxcanopydiam.cat<-unclass(max.maxcanopydiam.cat)
 
-s<-data.frame(dbh.cat,basalcanopydiam.cat,basalcanopydiam.cat) 
+#stem height
+summary(SOAP.grand$max.stemheight)
+max.stemheight.cat<-cut(SOAP.grand$max.stemheight, breaks= c(0,12.40,30.55, 42.18, 134))
+max.stemheight.cat<-unclass(max.stemheight.cat)
+
+s<-data.frame(dbh.cat,basalcanopydiam.cat,basalcanopydiam.cat,max.stemheight.cat) 
 
 tree.score<-rowSums(s)
 
 s$tree.score<-tree.score
-s$tree.score.perc<- (tree.score/12)
+s$tree.score.perc<- (tree.score/16)
 
 ## add on to SOAP.grand dataset
 
@@ -504,24 +509,24 @@ chm.score
 ```{r multivariable-regression-chm-and-ndvi}
 ## Full model in respect to dbh
 mod.full.dbh <- summary(lm(max.dbh~SOAP_lidarCHM + SOAP_NDVI, data=SOAP.grand))
-summary(mod.full.dbh)
+(mod.full.dbh)
 
 
 ## Full model in respect to base canopy diameter
 mod.full.bascalcanopydiam<-summary(lm(max.basalcanopydiam~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
-summary(mod.full.bascalcanopydiam)
+(mod.full.bascalcanopydiam)
 
 
 ## Full model in respect to max canopy
 mod.full.maxcanopydiam<-summary(lm(max.maxcanopydiam~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
 
-summary(mod.full.maxcanopydiam)
+(mod.full.maxcanopydiam)
 
 ## Full model in respect to stem height
 mod.full.stemheight<-summary(lm(max.stemheight~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
-summary(mod.full.stemheight)
+(mod.full.stemheight)
 
 
 ## Full model in respect to % score
 mod.full.score.perc<-summary(lm(tree.score.perc~SOAP_lidarCHM +SOAP_NDVI, data=SOAP.grand))
-summary(mod.full.score.perc)
+(mod.full.score.perc)
