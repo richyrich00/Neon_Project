@@ -1,0 +1,140 @@
+---
+title: "Remigio-Presentation Section"
+author: "R. Remigio"
+date: "June 25, 2016"
+output: html_document
+---
+
+# Evaluating varying relationships between LiDAR L2 and L3 products with in-situ field measuresments at D17-SOAP station 
+
+
+##Hypothesis: Can NDVI and CHM predict station-aggregated vegetation growth?
+
+![](/Users/R-Files/Documents/data/NEONDI-2016/Neon_Project/images/ndvi.jpeg)
+
+![](/Users/R-Files/Documents/data/NEONDI-2016/Neon_Project/images/SOAP-CHM.jpeg)
+
+
+--
+Explored Using NDVI and CHM rasters to determine its association with in-situ field parameters at SOAP plots. Such parameters include:
+
+- dbh, diameter at breast height (cm) 
+
+- basalCanopyDiam, maximum canopy diameter base, namely for shrubs (cm)
+
+- maxCanopyDiam, maximum canopy diameter (m)
+
+- stemHeight, distance between ground to highest stem or canopy point (m)
+
+
+Then developed a 'Tree Score' as a proxy for tree growth potential that incoporated the previous measures and applied a scoring system based on quantiles. Disclaimer: species types were not incoporated into the analysis but will be covered by my capstone peers. 
+
+
+#### Approach: Conduct plot-average linear regression analysis using in-situ variables and Tree Score with LiDAR rasters. 
+
+##Study Site:
+
+![Landscape of SOAP Stations at 20 m buffers.](/Users/R-Files/Documents/data/NEONDI-2016/Neon_Project/images/import-plot-centroids-1.png)
+
+
+### In-situ field aggregated measurements for SOAP
+
+![](/Users/R-Files/Documents/data/NEONDI-2016/Neon_Project/images/insitu-SOAP-cont.jpeg)
+
+### In-situ field measurements by unique site
+![](//Users/R-Files/Documents/data/NEONDI-2016/Neon_Project/images/Station-insitu-var.jpeg)
+
+
+
+
+## Tree Scoring 
+
+
+![](/Users/R-Files/Documents/data/NEONDI-2016/Neon_Project/images/Screen Shot 2016-06-25 at 4.12.14 AM.png)
+
+
+
+
+# Regression Analysis
+
+
+## NDVI
+
+
+## <table style="text-align:center"><tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="5"><em>Dependent variable:</em></td></tr>
+## <tr><td></td><td colspan="5" style="border-bottom: 1px solid black"></td></tr>
+## <tr><td style="text-align:left"></td><td>dbh,cm</td><td>basalCanopyDiam,cm</td><td>maxCanopyDiam,m</td><td>stemHeight,m</td><td>Combinatory Tree Index(-)</td></tr>
+## <tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td><td>(5)</td></tr>
+## <tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">NDVI</td><td>394.748</td><td>-891.248<sup>***</sup></td><td>132.966</td><td>320.930</td><td>1.509</td></tr>
+## <tr><td style="text-align:left"></td><td>(-122.167, 911.663)</td><td>(-1,433.297, -349.200)</td><td>(-142.008, 407.940)</td><td>(-197.733, 839.592)</td><td>(-0.768, 3.785)</td></tr>
+## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+## <tr><td style="text-align:left">Constant</td><td>-282.516</td><td>864.495<sup>***</sup></td><td>-100.070</td><td>-242.586</td><td>-0.707</td></tr>
+## <tr><td style="text-align:left"></td><td>(-739.388, 174.355)</td><td>(385.409, 1,343.581)</td><td>(-343.575, 143.435)</td><td>(-701.002, 215.831)</td><td>(-2.719, 1.306)</td></tr>
+## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+## <tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>12</td><td>12</td><td>11</td><td>12</td><td>12</td></tr>
+## <tr><td style="text-align:left">R<sup>2</sup></td><td>0.183</td><td>0.509</td><td>0.091</td><td>0.128</td><td>0.144</td></tr>
+## <tr><td style="text-align:left">Adjusted R<sup>2</sup></td><td>0.101</td><td>0.460</td><td>-0.010</td><td>0.041</td><td>0.059</td></tr>
+## <tr><td style="text-align:left">Residual Std. Error</td><td>41.920 (df = 10)</td><td>43.959 (df = 10)</td><td>22.145 (df = 9)</td><td>42.062 (df = 10)</td><td>0.185 (df = 10)</td></tr>
+## <tr><td style="text-align:left">F Statistic</td><td>2.240 (df = 1; 10)</td><td>10.385<sup>***</sup> (df = 1; 10)</td><td>0.898 (df = 1; 9)</td><td>1.471 (df = 1; 10)</td><td>1.687 (df = 1; 10)</td></tr>
+## <tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="5" style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+## </table>
+## 
+## <table style="text-align:center"><tr><td colspan="1" style="border-bottom: 1px solid black"></td></tr><tr><td>NDVI as the only predictor. Maximum NDVI values determined from 20 ft buffers at each respective SOAP station</td></tr>
+## <tr><td colspan="1" style="border-bottom: 1px solid black"></td></tr></table>
+
+
+
+## CHM
+
+
+## 
+## <table style="text-align:center"><tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="5"><em>Dependent variable:</em></td></tr>
+## <tr><td></td><td colspan="5" style="border-bottom: 1px solid black"></td></tr>
+## <tr><td style="text-align:left"></td><td>dbh,cm</td><td>basalCanopyDiam,cm</td><td>maxCanopyDiam,m</td><td>stemHeight,m</td><td>Combinatory Tree Index(-)</td></tr>
+## <tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td><td>(5)</td></tr>
+## <tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">CHM</td><td>1.817<sup>*</sup></td><td>-1.673</td><td>0.867<sup>*</sup></td><td>2.347<sup>***</sup></td><td>0.011<sup>***</sup></td></tr>
+## <tr><td style="text-align:left"></td><td>(0.161, 3.473)</td><td>(-4.177, 0.831)</td><td>(0.082, 1.652)</td><td>(1.056, 3.638)</td><td>(0.006, 0.016)</td></tr>
+## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+## <tr><td style="text-align:left">Constant</td><td>4.955</td><td>133.947<sup>**</sup></td><td>-11.584</td><td>-38.042</td><td>0.248<sup>**</sup></td></tr>
+## <tr><td style="text-align:left"></td><td>(-54.676, 64.587)</td><td>(43.779, 224.116)</td><td>(-39.849, 16.681)</td><td>(-84.548, 8.465)</td><td>(0.065, 0.430)</td></tr>
+## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+## <tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>12</td><td>12</td><td>12</td><td>12</td><td>12</td></tr>
+## <tr><td style="text-align:left">R<sup>2</sup></td><td>0.316</td><td>0.146</td><td>0.319</td><td>0.559</td><td>0.654</td></tr>
+## <tr><td style="text-align:left">Adjusted R<sup>2</sup></td><td>0.248</td><td>0.061</td><td>0.251</td><td>0.515</td><td>0.619</td></tr>
+## <tr><td style="text-align:left">Residual Std. Error (df = 10)</td><td>38.349</td><td>57.988</td><td>18.177</td><td>29.909</td><td>0.117</td></tr>
+## <tr><td style="text-align:left">F Statistic (df = 1; 10)</td><td>4.626<sup>*</sup></td><td>1.715</td><td>4.691<sup>*</sup></td><td>12.687<sup>***</sup></td><td>18.891<sup>***</sup></td></tr>
+## <tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="5" style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+## </table>
+## 
+## <table style="text-align:center"><tr><td colspan="1" style="border-bottom: 1px solid black"></td></tr><tr><td>CHM as the only predictor. Maximum CHM values determined from 20 ft buffers at each respective SOAP station</td></tr>
+## <tr><td colspan="1" style="border-bottom: 1px solid black"></td></tr></table>
+
+
+
+## Full Model (NDVI & CHM)
+
+
+## 
+## <table style="text-align:center"><tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="5"><em>Dependent variable:</em></td></tr>
+## <tr><td></td><td colspan="5" style="border-bottom: 1px solid black"></td></tr>
+## <tr><td style="text-align:left"></td><td>dbh,cm</td><td>basalCanopyDiam,cm</td><td>maxCanopyDiam,m</td><td>stemHeight,m</td><td>Combinatory Tree Index(-)</td></tr>
+## <tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td><td>(5)</td></tr>
+## <tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">NDVI+ CHM</td><td>1.505</td><td>-0.083</td><td>0.860</td><td>2.410<sup>**</sup></td><td>0.012<sup>***</sup></td></tr>
+## <tr><td style="text-align:left"></td><td>(-0.495, 3.505)</td><td>(-2.419, 2.254)</td><td>(-0.107, 1.826)</td><td>(0.822, 3.997)</td><td>(0.005, 0.018)</td></tr>
+## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+## <tr><td style="text-align:left">SOAP_NDVI</td><td>172.771</td><td>-879.058<sup>**</sup></td><td>4.323</td><td>-34.546</td><td>-0.205</td></tr>
+## <tr><td style="text-align:left"></td><td>(-398.347, 743.888)</td><td>(-1,546.200, -211.917)</td><td>(-271.608, 280.253)</td><td>(-488.015, 418.923)</td><td>(-1.983, 1.573)</td></tr>
+## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+## <tr><td style="text-align:left">Constant</td><td>-137.057</td><td>856.507<sup>**</sup></td><td>-15.137</td><td>-9.646</td><td>0.416</td></tr>
+## <tr><td style="text-align:left"></td><td>(-610.531, 336.417)</td><td>(303.426, 1,409.588)</td><td>(-243.892, 213.618)</td><td>(-385.586, 366.294)</td><td>(-1.057, 1.890)</td></tr>
+## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+## <tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>12</td><td>12</td><td>12</td><td>12</td><td>12</td></tr>
+## <tr><td style="text-align:left">R<sup>2</sup></td><td>0.342</td><td>0.510</td><td>0.319</td><td>0.560</td><td>0.656</td></tr>
+## <tr><td style="text-align:left">Adjusted R<sup>2</sup></td><td>0.196</td><td>0.401</td><td>0.168</td><td>0.463</td><td>0.579</td></tr>
+## <tr><td style="text-align:left">Residual Std. Error (df = 9)</td><td>39.657</td><td>46.324</td><td>19.160</td><td>31.487</td><td>0.123</td></tr>
+## <tr><td style="text-align:left">F Statistic (df = 2; 9)</td><td>2.339</td><td>4.678<sup>**</sup></td><td>2.112</td><td>5.735<sup>**</sup></td><td>8.575<sup>***</sup></td></tr>
+## <tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="5" style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+## </table>
+## 
+## <table style="text-align:center"><tr><td colspan="1" style="border-bottom: 1px solid black"></td></tr><tr><td>NDVI and CHM as predictors. Maximum NDVI and CHM values determined from 20 ft buffers at each respective SOAP station</td></tr>
+## <tr><td colspan="1" style="border-bottom: 1px solid black"></td></tr></table>
